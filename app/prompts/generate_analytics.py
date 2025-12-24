@@ -83,9 +83,10 @@ Your task:
 8. For 'line', 'area', 'bar', 'scatter', 'table' and 'composed' panel types, the minimum width (w) MUST be exactly 16.
 9. For 'pie' and 'radar' panel types, the minimum width (w) MUST be exactly 8.
 10. For 'kpi' and 'metric', have MAXIMUM of 4 panels combined.
-11. For others, have MAXIMUM of 4 panels in total. 
+11. For others, have MAXIMUM of 5 panels in total. 
 12. Generate a valid SQL query for each panel that fetches the data required for the chart configuration.
 13. Multiple panels should be generated and should be returned as a list of panels.
+14. Always include "area", "table" and "bar" charts.
 
 """),
     ("user", "Generate a dashboard configuration for the given database information.")
