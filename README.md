@@ -66,6 +66,9 @@ Create a `.env` file in the repository root (same folder as `run.py`).
 Required environment variables:
 
 ```bash
+# mindsdb
+MINDSDB_URL=...
+
 # Supabase
 SUPABASE_URL=...
 SUPABASE_ANON_KEY=...

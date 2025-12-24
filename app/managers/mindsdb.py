@@ -1,4 +1,5 @@
 from typing import Any, Dict, List
+from app.config import settings
 from fastapi import HTTPException
 import mindsdb_sdk
 from loguru import logger
@@ -7,7 +8,7 @@ from loguru import logger
 class MindsDBManager:
     def __init__(self):
         try:
-            self.mindsdb = mindsdb_sdk.connect()
+            self.mindsdb = mindsdb_sdk.connect(settings.MINDSDB_URL)
             # Validate connection by attempting to list databases
             # This ensures the connection actually works before logging success
             # _ = self.mindsdb.list_databases()
