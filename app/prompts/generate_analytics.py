@@ -1,7 +1,7 @@
 from langchain_core.prompts import ChatPromptTemplate
 
 GENERATE_ANALYTICS_PROMPT = ChatPromptTemplate.from_messages([
-    ("system", """You are a dashboard planner and analytics configuration generator. Given a database information, plan and generate multiple dashboard panels and analytics configuration.
+    ("system", """You are a dashboard planner and analytics configuration generator. Given database information, plan and generate multiple dashboard panels with analytics configuration that prioritize business-critical data.
 
 Database Schema:
 {schemas}
@@ -62,31 +62,50 @@ Panel Format:
     }}
 }}
 
+Panel Prioritization Rules:
+- PRIMARY FOCUS: Business-critical tables (orders, sales, transactions, products, inventory, revenue, customers, invoices, etc.)
+- SECONDARY FOCUS: User/authentication tables, logs, and generic system tables should ONLY appear in KPI/metric panels
+- Main visualization panels (bar, line, area, table, pie, etc.) MUST display data from business operations tables
+- Use KPI/metric panels for: user counts, active sessions, total records, system health metrics
+- Use detailed charts for: sales trends, revenue analysis, product performance, customer behavior, inventory levels, transaction patterns
+
 Ensure:
 - Output is **valid JSON** only (no markdown, comments, or explanations).
 - Include all required fields.
 - Omit optional fields if not relevant.
 
 Important:
-- Generate a VALID MindsDB SQL query for the given Database Type : {db_type}.
+- Generate a VALID MindsDB SQL query for the given Database Type: {db_type}.
 - The x_axis and y_axis fields should be valid column names from the database schema.
 - When generating sql query, don't use specific values in filter conditions for columns of type 'varchar' and 'text'. e.g. don't use 'WHERE name = "John"' in sql query.
+- Avoid hardcoded filters; use aggregations and time-based groupings instead.
 
 Your task:
-1. Understand the database information and generate multiple dashboard panels and analytics configuration based on the panel format.
-2. Generate ONLY the dashboard configuration, no explanations
-3. Determine the best chart types for the data
-4. Create a well-organized layout
-5. The grid position should be created based on the following total cols: 32.
-6. For 'kpi' or 'metric' panels, the height (h) MUST be exactly 4.  
-7. For all other panel types, the maximum height (h) MUST be 8.
-8. For 'line', 'area', 'bar', 'scatter', 'table' and 'composed' panel types, the minimum width (w) MUST be exactly 16.
-9. For 'pie' and 'radar' panel types, the minimum width (w) MUST be exactly 8.
-10. For 'kpi' and 'metric', have MAXIMUM of 4 panels combined.
-11. For others, have MAXIMUM of 5 panels in total. 
-12. Generate a valid SQL query for each panel that fetches the data required for the chart configuration.
-13. Multiple panels should be generated and should be returned as a list of panels.
-14. Always include "area", "table" and "bar" charts.
+1. Identify the PRIMARY business data tables (sales, orders, products, transactions, revenue, inventory, etc.)
+2. Generate main visualization panels (bar, line, area, table, pie) ONLY from business-critical tables
+3. Reserve KPI/metric panels for user statistics and generic metadata (user counts, table row counts, etc.)
+4. Generate ONLY the dashboard configuration, no explanations
+5. Determine the best chart types for the data
+6. Create a well-organized layout
+7. The grid position should be created based on the following total cols: 32.
+8. For 'kpi' or 'metric' panels, the height (h) MUST be exactly 4.  
+9. For all other panel types, the maximum height (h) MUST be 8.
+10. For 'line', 'area', 'bar', 'scatter', 'table' and 'composed' panel types, the minimum width (w) MUST be exactly 16.
+11. For 'pie' and 'radar' panel types, the minimum width (w) MUST be exactly 8.
+12. For 'kpi' and 'metric', have MAXIMUM of 4 panels combined (use for user/system metrics only).
+13. For others, have MAXIMUM of 5 panels in total (use for business data analysis).
+14. Always include "area", "table" and "bar" charts focused on business metrics.
+15. Generate a valid SQL query for each panel that fetches the data required for the chart configuration.
+16. Multiple panels should be generated and should be returned as a list of panels.
+
+Example Priority:
+✓ Orders over time (line chart) - PRIMARY
+✓ Revenue by product (bar chart) - PRIMARY
+✓ Sales distribution (pie chart) - PRIMARY
+✓ Inventory levels (area chart) - PRIMARY
+✓ Transaction details (table) - PRIMARY
+✓ Total users (KPI) - SECONDARY
+✓ Active sessions (metric) - SECONDARY
 
 """),
     ("user", "Generate a dashboard configuration for the given database information.")
