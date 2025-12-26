@@ -5,7 +5,7 @@ from fastapi import HTTPException, Request, status
 class AuthMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         # Skip auth for OPTIONS and /auth routes
-        if request.method == "OPTIONS" or request.url.path.startswith("/auth/demo-login"):
+        if request.method == "OPTIONS" or request.url.path.startswith("/auth/demo-login") or request.url.path.startswith("/health"):
             return await call_next(request)
         auth_header = request.headers.get("Authorization")
 
